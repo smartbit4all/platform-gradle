@@ -53,6 +53,14 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             if (apiModelPackagePostfix && !apiModelPackagePostfix.startsWith(".")) {
                 apiModelPackagePostfix = "." + apiModelPackagePostfix
             }
+            def apiApiPackagePrefix = extension.openApi.apiPackagePrefix.get()
+            if (!apiApiPackagePrefix.endsWith(".")) {
+                apiApiPackagePrefix += "."
+            }
+            def apiApiPackagePostfix = extension.openApi.apiPackagePostfix.get()
+            if (apiApiPackagePostfix && !apiApiPackagePostfix.startsWith(".")) {
+                apiApiPackagePostfix = "." + apiApiPackagePostfix
+            }
             def genModel = extension.openApi.genModel.get()
             def genApis = extension.openApi.genApis.get()
             def runGenAllOnCompile = extension.openApi.runGenAllOnCompile.get()
@@ -80,6 +88,7 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                         inputSpec = "$apiDescriptorPath$apiName-api.yaml"
                         outputDir = "$apiOutputDir"
                         modelPackage = "$apiModelPackagePrefix$apiName$apiModelPackagePostfix"
+                        apiPackage = "$apiApiPackagePrefix$apiName$apiApiPackagePostfix"
                         if (genModel && genApis) {
                             systemProperties = [
                                     models: "",

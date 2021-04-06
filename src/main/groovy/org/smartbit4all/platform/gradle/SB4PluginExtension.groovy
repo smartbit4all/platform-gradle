@@ -20,6 +20,8 @@ class SB4PluginExtension {
         //openApi.outputDir = ""
         openApi.modelPackagePrefix = "org.smartbit4all.api"
         openApi.modelPackagePostfix = "model"
+        openApi.apiPackagePrefix = "org.smartbit4all.api"
+        openApi.apiPackagePostfix = "service"
         openApi.genModel = true
         openApi.genApis = false
         openApi.runGenAllOnCompile = false
