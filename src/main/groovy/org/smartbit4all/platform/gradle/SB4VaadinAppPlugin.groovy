@@ -14,36 +14,40 @@ public class SB4VaadinAppPlugin implements Plugin<Project> {
         project.getPlugins().apply("org.springframework.boot")
         project.getPlugins().apply("com.vaadin")
 
-        project.defaultTasks("clean", "vaadinBuildFrontend", "build")
+        project.afterEvaluate { Project proj ->
+            proj.defaultTasks("clean", "vaadinBuildFrontend", "build")
 
-        project.configurations {
-            developmentOnly
-            runtimeClasspath {
-                extendsFrom developmentOnly
+            proj.configurations {
+                developmentOnly
+                runtimeClasspath {
+                    extendsFrom developmentOnly
+                }
             }
+
+            proj.dependencies {
+                developmentOnly 'org.springframework.boot:spring-boot-devtools'
+                testImplementation('org.springframework.boot:spring-boot-starter-test') {
+                    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+                }
+            }
+
+            def vaadin = proj.getExtensions().getByType(VaadinFlowPluginExtension)
+            vaadin.pnpmEnable = true
+
+            proj.tasks.getByName("vaadinBuildFrontend", {
+                doLast{
+                    file('build/vaadin-generated/.keep').text=""
+                    println "build/vaadin-generated/.keep has been generated."
+                }
+            })
+
+
+            proj.tasks.create("eclipseVaadinSync", DefaultTask.class, {
+                dependsOn("vaadinBuildFrontend")
+                dependsOn("assemble")
+            })
+
         }
-
-        project.dependencies {
-            developmentOnly 'org.springframework.boot:spring-boot-devtools'
-            testImplementation('org.springframework.boot:spring-boot-starter-test') {
-                exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-            }
-        }
-
-        def vaadin = project.getExtensions().getByType(VaadinFlowPluginExtension)
-        vaadin.pnpmEnable = true
-
-        project.tasks.getByName("vaadinBuildFrontend", {
-            doLast{
-                file('build/vaadin-generated/.keep').text=""
-                println "build/vaadin-generated/.keep has been generated."
-            }
-        })
-
-        project.tasks.create("eclipseVaadinSync", DefaultTask.class, {
-            dependsOn(vaadinBuildFrontend)
-            dependsOn(assemble)
-        })
     }
 
 }
