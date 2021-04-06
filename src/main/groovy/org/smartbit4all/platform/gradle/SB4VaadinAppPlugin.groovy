@@ -34,20 +34,20 @@ public class SB4VaadinAppPlugin implements Plugin<Project> {
             def vaadin = proj.getExtensions().getByType(VaadinFlowPluginExtension)
             vaadin.pnpmEnable = true
 
-            proj.tasks.getByName("vaadinBuildFrontend", {
-                doLast{
-                    file('build/vaadin-generated/.keep').text=""
-                    println "build/vaadin-generated/.keep has been generated."
-                }
-            })
-
-
-            proj.tasks.create("eclipseVaadinSync", DefaultTask.class, {
-                dependsOn("vaadinBuildFrontend")
-                dependsOn("assemble")
-            })
-
         }
+
+        project.tasks.getByName("vaadinBuildFrontend", {
+            doLast{
+                project.file('build/vaadin-generated/.keep').text=""
+                println "build/vaadin-generated/.keep has been generated."
+            }
+        })
+
+        project.tasks.create("eclipseVaadinSync", DefaultTask.class, {
+            dependsOn("vaadinBuildFrontend")
+            dependsOn("assemble")
+        })
+
     }
 
 }
