@@ -1,20 +1,60 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+
+smartbit4all gradle plugin
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+1.	Modify local.settings.gradle with includeBuild pointing to platform-gradle source
+2.	Add plugins to build.gradle, where necessary
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+# Available plugins
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Java plugin
+
+```
+plugins {
+    id 'org.smartbit4all.platform.gradle.java'
+}
+```
+
+Setup options and defaults:
+
+```
+smartbit4all {
+    javaVersion = JavaVersion_1_8
+    sourceEncoding = 'UTF-8'
+}
+```
+
+Effect:
+- java: set javaVersion
+- repositories: add jcenter and mavenCentral
+- test: useJUnitPlatform
+
+## Vaadin module
+
+Include plugin:
+
+```
+plugins {
+    id 'org.smartbit4all.platform.gradle.vaadin-module'
+}
+```
+
+Setup options and defaults:
+
+```
+smartbit4all {
+    vaadinVersion = "14.4.6"
+}
+```
+
+Effect:
+- add io.spring.dependency-management
+- add vaadin.vaadinVersion dependencies
+- add vaadin-addons repository
+- add spring-boot-starter-web
+
+## Vaadin app
+
+## OpenApi generator
