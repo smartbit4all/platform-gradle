@@ -18,12 +18,18 @@ class SB4PluginExtension {
         openApi = objects.newInstance(SB4OpenApiExtension)
         openApi.apiDescriptorPath = ""
         //openApi.outputDir = ""
+        openApi.modelPackage = ""
         openApi.modelPackagePrefix = "org.smartbit4all.api"
         openApi.modelPackagePostfix = "model"
+        openApi.apiPackage = ""
         openApi.apiPackagePrefix = "org.smartbit4all.api"
         openApi.apiPackagePostfix = "service"
-        openApi.genModel = true
-        openApi.genApis = false
+        openApi.invokerPackage = ""
+        openApi.invokerPackagePrefix = "org.smartbit4all.api"
+        openApi.invokerPackagePostfix = "service.util"
+        openApi.genModel = false
+        openApi.genApiRestClient = false
+        openApi.genApiRestServer = false
         openApi.runGenAllOnCompile = false
     }
 

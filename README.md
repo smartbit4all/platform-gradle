@@ -102,13 +102,16 @@ Setup options and defaults:
 smartbit4all {
     openApi {
         apiDescriptorPath = ${projectDir}/src/main/resources/descriptors/
+        modelPackage = ""
         modelPackagePrefix = "org.smartbit4all.api"
         modelPackagePostfix = "model"
+        apiPackage = ""
         apiPackagePrefix = "org.smartbit4all.api"
         apiPackagePostfix = "service"
 
         genModel = true
-        genApis = false
+        genApiRestClient = false
+        genApiRestServer = false
 
         runGenAllOnCompile = false
     }
@@ -118,8 +121,10 @@ smartbit4all {
 Effect:
 - add src-gen/main/java to project
 - add openApiGenerate<API> task for all <API>-api.yaml files found in apiDescriptorPath (non-recursive). openApiGenerate<API> task will generate:
-  - model files (beans) to modelPackagePrefix.<API>.modelPackagePostfix (if genModel==true)
-  - service files (apis) to apiPackagePrefix.<API>.apiPackagePostfix (if genApis==true)
+  - model files (beans) to modelPackage, if specified, otherwise to modelPackagePrefix.<API>.modelPackagePostfix (if genModel==true)
+  - service files (apis) to apiPackagePrefix.<API>.apiPackagePostfix for client and server (if genApiRestClient==true || genApiRestServer == true)
 - add genAll task, which depends on all openApiGenerate<API> tasks
 - make compileJava depend on genAll if runGenAllOnCompile == true
 
+Limitations:
+- only one of genModel/genApiRestClient/genApiRestServer can be true at a time!

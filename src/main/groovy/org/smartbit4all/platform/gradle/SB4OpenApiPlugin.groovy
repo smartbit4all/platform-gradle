@@ -45,6 +45,9 @@ class SB4OpenApiPlugin implements Plugin<Project> {
 //                apiOutputDir = "${proj.projectDir}/${srcGenMainJava}"
 //            }
             def apiOutputDir = "${proj.projectDir}/${srcGenMainJava}"
+
+            // model package
+            def apiModelPackage = extension.openApi.modelPackage.get()
             def apiModelPackagePrefix = extension.openApi.modelPackagePrefix.get()
             if (!apiModelPackagePrefix.endsWith(".")) {
                 apiModelPackagePrefix += "."
@@ -53,6 +56,8 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             if (apiModelPackagePostfix && !apiModelPackagePostfix.startsWith(".")) {
                 apiModelPackagePostfix = "." + apiModelPackagePostfix
             }
+            // api package
+            def apiApiPackage = extension.openApi.apiPackage.get()
             def apiApiPackagePrefix = extension.openApi.apiPackagePrefix.get()
             if (!apiApiPackagePrefix.endsWith(".")) {
                 apiApiPackagePrefix += "."
@@ -61,8 +66,25 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             if (apiApiPackagePostfix && !apiApiPackagePostfix.startsWith(".")) {
                 apiApiPackagePostfix = "." + apiApiPackagePostfix
             }
+            // invoker package
+            def apiInvokerPackage = extension.openApi.invokerPackage.get()
+            def apiInvokerPackagePrefix = extension.openApi.invokerPackagePrefix.get()
+            if (!apiInvokerPackagePrefix.endsWith(".")) {
+                apiInvokerPackagePrefix += "."
+            }
+            def apiInvokerPackagePostfix = extension.openApi.invokerPackagePostfix.get()
+            if (apiInvokerPackagePostfix && !apiInvokerPackagePostfix.startsWith(".")) {
+                apiInvokerPackagePostfix = "." + apiInvokerPackagePostfix
+            }
+
             def genModel = extension.openApi.genModel.get()
-            def genApis = extension.openApi.genApis.get()
+            def genApiRestClient = extension.openApi.genApiRestClient.get()
+            def genApiRestServer = extension.openApi.genApiRestServer.get()
+            def genApis = genApiRestClient || genApiRestServer
+            if (genApiRestClient && genApiRestServer) {
+                // TODO better error handling
+                println "***** Generating restApiClient and restApiServer currently not supported! Unexpected results should expected! *****"
+            }
             def runGenAllOnCompile = extension.openApi.runGenAllOnCompile.get()
 
             def descriptorList = []
@@ -73,9 +95,16 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             }
             println "API descriptor path: $apiDescriptorPath"
             println "API output dir: $apiOutputDir"
-            println "API generated package: $apiModelPackagePrefix<API>$apiModelPackagePostfix"
 
             def taskList = []
+
+            if (!genModel && !genApiRestClient && !genApiRestServer) {
+                genModel = true
+            }
+            if ( (genApiRestServer && genApiRestClient) || (genModel && genApiRestClient) || (genModel && genApiRestServer)) {
+                println "genModel, genApiRestClient, genApiRestServer cannot be true at the same time!"
+                return
+            }
 
             descriptorList.each {
                 def apiName = it.getName().replace("-api.yaml", "");
@@ -83,35 +112,114 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                 taskList << taskName
 
                 if (genModel || genApis) {
+                    def modelPackageToUse = apiModelPackage
+                    if (!modelPackageToUse) {
+                        modelPackageToUse = "$apiModelPackagePrefix$apiName$apiModelPackagePostfix"
+                    }
+                    def apiPackageToUse = apiApiPackage
+                    if (!apiPackageToUse) {
+                        apiPackageToUse = "$apiApiPackagePrefix$apiName$apiApiPackagePostfix"
+                    }
+                    def invokerPackageToUse = apiInvokerPackage
+                    if (!invokerPackageToUse) {
+                        invokerPackageToUse = "$apiInvokerPackagePrefix$apiName$apiInvokerPackagePostfix"
+                    }
+                    if (genModel) {
+                        println "API modelPackage for $apiName: $modelPackageToUse"
+                    }
+                    if (genApis) {
+                        println "API apiPackage for $apiName: $apiPackageToUse"
+                        println "API invokerPackage for $apiName: $invokerPackageToUse"
+                    }
+
                     proj.tasks.create(taskName, GenerateTask.class, {
-                        generatorName = "spring"
-                        inputSpec = "$apiDescriptorPath$apiName-api.yaml"
-                        outputDir = "$apiOutputDir"
-                        modelPackage = "$apiModelPackagePrefix$apiName$apiModelPackagePostfix"
-                        apiPackage = "$apiApiPackagePrefix$apiName$apiApiPackagePostfix"
-                        if (genModel && genApis) {
-                            systemProperties = [
-                                    models: "",
-                                    apis: ""
-                            ]
-                        } else if (genModel) {
+                        // create .openapi-generator-ignore before generating
+                        project.mkdir(apiOutputDir)
+                        project.file("$apiOutputDir/.openapi-generator-ignore").text = """
+/*
+api/*
+docs/*
+gradle*/
+/src/
+"""
+
+
+                        if (genModel) {
+                            generatorName = "spring"
+                            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+                            outputDir = "$apiOutputDir"
+                            modelPackage = "$modelPackageToUse"
                             systemProperties = [
                                     models: ""
                             ]
-                        } else {
-                            systemProperties = [
-                                    apis: ""
+                            configOptions = [
+                                    dateLibrary: "java8",
+                                    unhandledException: 'true',
+                                    hideGenerationTimestamp: 'true',
+                                    useTags: 'true',
+                                    sourceFolder: '', // without this the generatum is placed under 'src/main/java'
+                                    interfaceOnly: 'true'
+                            ]
+                            typeMappings = [
+                                    OffsetDateTime: 'java.time.LocalDateTime'
                             ]
                         }
+                        if (genApiRestClient) {
+                            generatorName = "java"
+                            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+                            outputDir = "$apiOutputDir"
+                            modelPackage = "$modelPackageToUse"
+                            apiPackage = "$apiPackageToUse"
+                            invokerPackage = "$invokerPackageToUse"
+                            library = "resttemplate"
+                            systemProperties = [
+                                    apis: "",
+                                    apiTests: "false",
+                                    supportingFiles: "",
+                                    apiDocs: "false"
+                            ]
+                            configOptions = [
+                                    dateLibrary: "java8",
+                                    unhandledException: 'true',
+                                    hideGenerationTimestamp: 'true',
+                                    useTags: 'true',
+                                    sourceFolder: '', // without this the generatum is placed under 'src/main/java'
+                                    interfaceOnly: 'true'
+                            ]
+                        }
+                        if (genApiRestServer) {
+                            generatorName = "spring"
+                            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+                            outputDir = "$apiOutputDir"
+                            modelPackage = "$modelPackageToUse"
+                            apiPackage = "$apiPackageToUse"
+                            invokerPackage = "$invokerPackageToUse"
+                            library = "spring-boot"
+                            systemProperties = [
+                                    apis: "",
+                                    apiTests: "false",
+                                    apiDocs: "false"
+                            ]
+                            configOptions = [
+                                    dateLibrary: "java8",
+                                    delegatePattern: 'true',
+                                    unhandledException: 'true',
+                                    hideGenerationTimestamp: 'true',
+                                    useTags: 'true',
+                                    sourceFolder: '' // without this the generatum is placed under 'src/main/java'
+                            ]
+                        }
+                    })
 
-                        configOptions = [
-                                dateLibrary            : "java8",
-                                unhandledException     : 'true',
-                                hideGenerationTimestamp: 'true',
-                                useTags                : 'true',
-                                sourceFolder           : '', // without this the generatum is placed under 'src/main/java'
-                                interfaceOnly          : 'true'
-                        ]
+                    proj.tasks.getByName(taskName, {
+                        // delete all unnecessary files and folders after generating
+                        doLast{
+                            proj.delete "$apiOutputDir/.openapi-generator"
+                            proj.delete "$apiOutputDir/api"
+                            proj.delete "$apiOutputDir/gradle"
+                            proj.delete "$apiOutputDir/src"
+                            proj.delete "$apiOutputDir/.openapi-generator-ignore"
+                        }
                     })
                 }
             }
