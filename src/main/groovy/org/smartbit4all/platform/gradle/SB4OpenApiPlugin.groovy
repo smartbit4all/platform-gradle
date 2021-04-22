@@ -19,17 +19,25 @@ class SB4OpenApiPlugin implements Plugin<Project> {
         }
         project.getPlugins().apply("org.openapi.generator")
 
-        project.dependencies {
-            implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
-            implementation 'io.swagger:swagger-annotations:1.5.22'
-            implementation 'javax.validation:validation-api:2.0.1.Final'
-        }
 
         def srcGenMainJava = 'src-gen/main/java'
         project.ext.set('srcGenMainJava', srcGenMainJava)
         SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-        SourceSet generated = sourceSets.create("generated")
-        generated.getJava().setSrcDirs(Arrays.asList(srcGenMainJava));
+        SourceSet generatedSourceSet = sourceSets.create("generated")
+        generatedSourceSet.getJava().setSrcDirs(Arrays.asList(srcGenMainJava));
+        SourceSet mainSourceSet = sourceSets.getByName("main")
+        mainSourceSet.compileClasspath += generatedSourceSet.output
+        mainSourceSet.runtimeClasspath += generatedSourceSet.output
+        project.dependencies {
+            generatedImplementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+            generatedImplementation 'io.swagger:swagger-annotations:1.5.22'
+            generatedImplementation 'javax.validation:validation-api:2.0.1.Final'
+        }
+
+        project.configurations {
+            generatedImplementation.extendsFrom(implementation)
+            generatedRuntimeOnly.extendsFrom(runtimeOnly)
+        }
 
         project.afterEvaluate { Project proj ->
             def apiDescriptorPath = extension.openApi.apiDescriptorPath.get()
@@ -106,6 +114,29 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                 return
             }
 
+            // add springfox dependency to rest server
+            if(genApiRestServer) {
+                proj.dependencies {
+                    generatedImplementation 'io.springfox:springfox-swagger2:2.9.2'
+                }
+            }
+
+            proj.tasks.register('createGeneratorIgnoreFile') {
+                // create .openapi-generator-ignore before generating
+                doLast {
+                    project.mkdir(apiOutputDir)
+                    project.file("$apiOutputDir/.openapi-generator-ignore").text = """
+/*
+api/*
+docs/*
+gradle*/
+/src/
+"""
+                }
+            }
+
+
+
             descriptorList.each {
                 def apiName = it.getName().replace("-api.yaml", "");
                 def taskName = "openApiGenerate" + apiName.capitalize()
@@ -133,17 +164,6 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                     }
 
                     proj.tasks.create(taskName, GenerateTask.class, {
-                        // create .openapi-generator-ignore before generating
-                        project.mkdir(apiOutputDir)
-                        project.file("$apiOutputDir/.openapi-generator-ignore").text = """
-/*
-api/*
-docs/*
-gradle*/
-/src/
-"""
-
-
                         if (genModel) {
                             generatorName = "spring"
                             inputSpec = "$apiDescriptorPath$apiName-api.yaml"
@@ -197,6 +217,7 @@ gradle*/
                             library = "spring-boot"
                             systemProperties = [
                                     apis: "",
+                                    supportingFiles: "",
                                     apiTests: "false",
                                     apiDocs: "false"
                             ]
@@ -206,6 +227,7 @@ gradle*/
                                     unhandledException: 'true',
                                     hideGenerationTimestamp: 'true',
                                     useTags: 'true',
+                                    swaggerDocketConfig: 'true',
                                     sourceFolder: '' // without this the generatum is placed under 'src/main/java'
                             ]
                         }
@@ -213,12 +235,33 @@ gradle*/
 
                     proj.tasks.getByName(taskName, {
                         // delete all unnecessary files and folders after generating
+
+                        dependsOn('createGeneratorIgnoreFile')
+
                         doLast{
                             proj.delete "$apiOutputDir/.openapi-generator"
                             proj.delete "$apiOutputDir/api"
                             proj.delete "$apiOutputDir/gradle"
                             proj.delete "$apiOutputDir/src"
                             proj.delete "$apiOutputDir/.openapi-generator-ignore"
+                            if(genApiRestServer) {
+                                // delete unnecessary generated invoker folder (due unwanted Application class)
+                                def invokerPackageFolder = "$invokerPackageToUse".replace(".","/")
+                                proj.delete "$apiOutputDir/$invokerPackageFolder"
+
+                                // copy DocumentationConfig to api package
+                                def apiPackageFolder = "$apiPackageToUse".replace(".","/")
+                                def configFolder = "$apiOutputDir/$apiPackageFolder/config"
+                                proj.mkdir configFolder
+                                def generatedConfigFolderBase = "$apiOutputDir/org/openapitools"
+                                ant.move file: "$generatedConfigFolderBase/configuration/OpenAPIDocumentationConfig.java",
+                                         todir: configFolder
+                                proj.delete generatedConfigFolderBase
+
+                                ant.replaceregexp(match:"package org.openapitools.configuration", replace:"package $apiPackageToUse" + ".config", flags:'g', byline:true) {
+                                    fileset(dir: configFolder, includes: "OpenAPIDocumentationConfig.java")
+                                }
+                            }
                         }
                     })
                 }
@@ -227,13 +270,13 @@ gradle*/
                 proj.tasks.create("genAll", DefaultTask, {
                     dependsOn(taskList)
                 })
+                mainSourceSet.output.dir(srcGenMainJava, builtBy: 'genAll')
+
                 if (runGenAllOnCompile) {
                     project.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME, {
                         dependsOn('genAll')
                     })
-
                 }
-//                    proj.tasks.
             }
 
         }
