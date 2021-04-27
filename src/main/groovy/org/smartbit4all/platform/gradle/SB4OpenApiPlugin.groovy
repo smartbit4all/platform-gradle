@@ -270,7 +270,7 @@ gradle*/
                 proj.tasks.create("genAll", DefaultTask, {
                     dependsOn(taskList)
                 })
-                mainSourceSet.output.dir(generatedSourceSet.output, builtBy: 'genAll')
+                mainSourceSet.output.dir(generatedSourceSet.output)
 
                 if (runGenAllOnCompile) {
                     project.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME, {
