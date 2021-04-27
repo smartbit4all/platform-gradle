@@ -35,8 +35,17 @@ class SB4OpenApiPlugin implements Plugin<Project> {
         }
 
         project.configurations {
+            // for all configurations see:
+            // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph
+            // Table 1. Java Library plugin - configurations used to declare dependencies
+            generatedApi.extendsFrom(api)
             generatedImplementation.extendsFrom(implementation)
+            generatedCompileOnly.extendsFrom(compileOnly)
+            generatedCompileOnlyApi.extendsFrom(compileOnlyApi)
             generatedRuntimeOnly.extendsFrom(runtimeOnly)
+            generatedTestImplementation.extendsFrom(testImplementation)
+            generatedTestCompileOnly.extendsFrom(testCompileOnly)
+            generatedTestRuntimeOnly.extendsFrom(testRuntimeOnly)
         }
 
         project.afterEvaluate { Project proj ->
