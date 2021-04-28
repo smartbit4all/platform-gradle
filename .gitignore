@@ -4,8 +4,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src-gen/main/**/build/
+!**/src-gen/test/**/build/ 
 
-### STS ###
+### STS / Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -13,9 +15,12 @@ build/
 .settings
 .springBeans
 .sts4-cache
+.dbeaver
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+!**/src-gen/main/**/bin/
+!**/src-gen/test/**/bin/ 
 
 ### IntelliJ IDEA ###
 .idea
@@ -35,3 +40,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+#vaadin npm, frontend
+node_modules/
+package.json
+pnpm-lock.yaml
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Log file
+*.log
+
