@@ -11,14 +11,14 @@ import spock.lang.Specification
  * A simple unit test for the 'org.smartbit4ll.platform.gradle.greeting' plugin.
  */
 public class PlatformGradlePluginTest extends Specification {
-    def "plugin registers task"() {
-        given:
-        def project = ProjectBuilder.builder().build()
-
-        when:
-        project.plugins.apply("org.smartbit4ll.platform.gradle.java")
-
-        then:
-        project.tasks.findByName("jar") != null
-    }
+//    def "plugin registers task"() {
+//        given:
+//        def project = ProjectBuilder.builder().build()
+//
+//        when:
+//        project.plugins.apply("org.smartbit4ll.platform.gradle.java")
+//
+//        then:
+//        project.tasks.findByName("jar") != null
+//    }
 }

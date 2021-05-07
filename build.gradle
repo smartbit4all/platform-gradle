@@ -4,6 +4,9 @@ plugins {
 
     // Apply the Groovy plugin to add support for Groovy
     id 'groovy'
+
+    //id "net.linguica.maven-settings" version "0.5"
+    id 'maven-publish'
 }
 
 repositories {
@@ -11,6 +14,14 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     gradlePluginPortal()
+    maven {
+        url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
+        name 'it4allArtifacts'
+        credentials(PasswordCredentials)
+        authentication {
+            basic(BasicAuthentication)
+        }
+    }
 }
 
 dependencies {
@@ -23,23 +34,34 @@ dependencies {
     testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
 }
 
+group = 'org.smartbit4all.platform'
+version = '0.1.3'
+
 gradlePlugin {
     // Define the plugin
     plugins {
         sb4java {
             id = 'org.smartbit4all.platform.gradle.java'
+            displayName = 'smartbit4all Java Gradle plugin'
+            description = 'Generic plugin for use with smartbit4all based projects, adds Java dependencies.'
             implementationClass = 'org.smartbit4all.platform.gradle.SB4JavaPlugin'
         }
         sb4vaadinmodule {
             id = 'org.smartbit4all.platform.gradle.vaadin-module'
+            displayName = 'smartbit4all Vaadin module Gradle plugin'
+            description = 'Generic plugin for use with smartbit4all based projects, adds Vaadin dependencies for module development.'
             implementationClass = 'org.smartbit4all.platform.gradle.SB4VaadinModulePlugin'
         }
         sb4vaadinapp {
             id = 'org.smartbit4all.platform.gradle.vaadin-app'
+            displayName = 'smartbit4all Java Gradle plugin'
+            description = 'Generic plugin for use with smartbit4all based projects, adds Vaadin dependencies for application development.'
             implementationClass = 'org.smartbit4all.platform.gradle.SB4VaadinAppPlugin'
         }
         sb4openapi {
             id = 'org.smartbit4all.platform.gradle.openapi'
+            displayName = 'smartbit4all Java Gradle plugin'
+            description = 'Generic plugin for use with smartbit4all based projects, adds openApiGenerate<API> targets for OpenApi generation.'
             implementationClass = 'org.smartbit4all.platform.gradle.SB4OpenApiPlugin'
         }
     }
@@ -63,4 +85,17 @@ tasks.register('functionalTest', Test) {
 check {
     // Run the functional tests as part of `check`
     dependsOn(tasks.functionalTest)
+}
+
+publishing {
+    repositories {
+        maven {
+            url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
+            name 'it4allArtifacts'
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
 }
