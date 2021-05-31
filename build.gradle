@@ -5,8 +5,9 @@ plugins {
     // Apply the Groovy plugin to add support for Groovy
     id 'groovy'
 
-    //id "net.linguica.maven-settings" version "0.5"
+    // publish
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.14.0'
 }
 
 repositories {
@@ -36,6 +37,12 @@ dependencies {
 
 group = 'org.smartbit4all.platform'
 version = '0.1.4'
+
+pluginBundle {
+    website = 'https://github.com/smartbit4all'
+    vcsUrl = 'https://github.com/smartbit4all/platform-gradle.git'
+    tags = ['smartbit4all', 'java', 'vaadin', 'openapi']
+}
 
 gradlePlugin {
     // Define the plugin
