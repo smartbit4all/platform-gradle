@@ -114,6 +114,8 @@ smartbit4all {
         genApiRestServer = false
 
         runGenAllOnCompile = false
+        
+        importMappings = []
     }
 }
 ```
