@@ -23,29 +23,12 @@ class SB4OpenApiPlugin implements Plugin<Project> {
         def srcGenMainJava = 'src-gen/main/java'
         project.ext.set('srcGenMainJava', srcGenMainJava)
         SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-        SourceSet generatedSourceSet = sourceSets.create("generated")
-        generatedSourceSet.getJava().setSrcDirs(Arrays.asList(srcGenMainJava));
         SourceSet mainSourceSet = sourceSets.getByName("main")
-        mainSourceSet.compileClasspath += generatedSourceSet.output
-        mainSourceSet.runtimeClasspath += generatedSourceSet.output
+        mainSourceSet.getJava().srcDirs(srcGenMainJava)
         project.dependencies {
-            generatedImplementation 'org.openapitools:jackson-databind-nullable:0.2.1'
-            generatedImplementation 'io.swagger:swagger-annotations:1.5.22'
-            generatedImplementation 'javax.validation:validation-api:2.0.1.Final'
-        }
-
-        project.configurations {
-            // for all configurations see:
-            // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph
-            // Table 1. Java Library plugin - configurations used to declare dependencies
-            generatedApi.extendsFrom(api)
-            generatedImplementation.extendsFrom(implementation)
-            generatedCompileOnly.extendsFrom(compileOnly)
-            generatedCompileOnlyApi.extendsFrom(compileOnlyApi)
-            generatedRuntimeOnly.extendsFrom(runtimeOnly)
-            generatedTestImplementation.extendsFrom(testImplementation)
-            generatedTestCompileOnly.extendsFrom(testCompileOnly)
-            generatedTestRuntimeOnly.extendsFrom(testRuntimeOnly)
+            implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+            implementation 'io.swagger:swagger-annotations:1.5.22'
+            implementation 'javax.validation:validation-api:2.0.1.Final'
         }
 
         project.afterEvaluate { Project proj ->
@@ -56,11 +39,6 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             if (!apiDescriptorPath.endsWith("/")) {
                 apiDescriptorPath += "/"
             }
-            // TODO parameterize outputDir
-//            def apiOutputDir = extension.openApi.outputDir.get()
-//            if (!apiOutputDir) {
-//                apiOutputDir = "${proj.projectDir}/${srcGenMainJava}"
-//            }
             def apiOutputDir = "${proj.projectDir}/${srcGenMainJava}"
 
             // model package
@@ -126,7 +104,7 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             // add springfox dependency to rest server
             if(genApiRestServer) {
                 proj.dependencies {
-                    generatedImplementation 'io.springfox:springfox-swagger2:2.9.2'
+                    implementation 'io.springfox:springfox-swagger2:2.9.2'
                 }
             }
 
@@ -279,7 +257,6 @@ gradle*/
                 proj.tasks.create("genAll", DefaultTask, {
                     dependsOn(taskList)
                 })
-                mainSourceSet.output.dir(generatedSourceSet.output)
 
                 if (runGenAllOnCompile) {
                     project.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME, {
