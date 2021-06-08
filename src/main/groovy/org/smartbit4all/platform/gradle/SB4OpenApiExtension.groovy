@@ -1,5 +1,6 @@
 package org.smartbit4all.platform.gradle
 
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property;
 
 /**
@@ -24,5 +25,8 @@ abstract public class SB4OpenApiExtension {
     abstract public Property<Boolean> getGenApiRestServer();
 
     abstract public Property<Boolean> getRunGenAllOnCompile();
+
+    abstract public MapProperty<String, String> getImportMappings();
+
 }
 

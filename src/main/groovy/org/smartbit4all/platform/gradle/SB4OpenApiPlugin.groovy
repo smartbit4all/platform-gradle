@@ -122,7 +122,7 @@ gradle*/
                 }
             }
 
-
+            def mappings = extension.openApi.importMappings
 
             descriptorList.each {
                 def apiName = it.getName().replace("-api.yaml", "");
@@ -170,6 +170,9 @@ gradle*/
                             typeMappings = [
                                     OffsetDateTime: 'java.time.LocalDateTime'
                             ]
+                            if (mappings != []) {
+                                importMappings = mappings
+                            }
                         }
                         if (genApiRestClient) {
                             generatorName = "java"
