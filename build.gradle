@@ -35,8 +35,8 @@ dependencies {
     testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
 }
 
-group = 'org.smartbit4all.platform'
-version = '0.1.4'
+group = 'org.smartbit4all.platform.gradle'
+version = '0.1.5'
 
 pluginBundle {
     website = 'https://github.com/smartbit4all'
@@ -94,15 +94,15 @@ check {
     dependsOn(tasks.functionalTest)
 }
 
-publishing {
-    repositories {
-        maven {
-            url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
-            name 'it4allArtifacts'
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
-}
+//publishing {
+//    repositories {
+//        maven {
+//            url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
+//            name 'it4allArtifacts'
+//            credentials(PasswordCredentials)
+//            authentication {
+//                basic(BasicAuthentication)
+//            }
+//        }
+//    }
+//}

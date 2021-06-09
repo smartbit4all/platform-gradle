@@ -23,13 +23,11 @@ Setup options and defaults:
 
 ```
 smartbit4all {
-    javaVersion = JavaVersion_1_8
     sourceEncoding = 'UTF-8'
 }
 ```
 
 Effect:
-- java: set javaVersion
 - javac: use sourceEncoding
 - repositories: add jcenter and mavenCentral
 - test: useJUnitPlatform

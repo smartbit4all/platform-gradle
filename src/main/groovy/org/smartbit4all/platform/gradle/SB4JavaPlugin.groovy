@@ -22,13 +22,6 @@ public class SB4JavaPlugin implements Plugin<Project> {
         // java version
         project.afterEvaluate {
             Project p ->
-                def javaVersion = extension.javaVersion
-                String javaVersionString = javaVersion.toString()
-                project.setProperty("sourceCompatibility", javaVersionString)
-                project.setProperty("targetCompatibility", javaVersionString)
-                def javaPluginExt = project.getExtensions().getByType(JavaPluginExtension)
-                javaPluginExt.sourceCompatibility = javaVersion
-                javaPluginExt.targetCompatibility = javaVersion
                 // source encoding
                 p.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
                     getOptions().setEncoding(extension.sourceEncoding)
@@ -43,8 +36,7 @@ public class SB4JavaPlugin implements Plugin<Project> {
             jcenter()
             mavenCentral()
         }
-//        project.repositories.addAll(project.repositories.jcenter())
-//        project.repositories.addAll(project.repositories.mavenCentral())
+
         // test
         project.tasks.getByName(JavaPlugin.TEST_TASK_NAME, {
             useJUnitPlatform()
