@@ -15,14 +15,14 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     gradlePluginPortal()
-    maven {
-        url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
-        name 'it4allArtifacts'
-        credentials(PasswordCredentials)
-        authentication {
-            basic(BasicAuthentication)
-        }
-    }
+//    maven {
+//        url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
+//        name 'it4allArtifacts'
+//        credentials(PasswordCredentials)
+//        authentication {
+//            basic(BasicAuthentication)
+//        }
+//    }
 }
 
 dependencies {
