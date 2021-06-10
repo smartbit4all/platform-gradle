@@ -10,19 +10,14 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.14.0'
 }
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     gradlePluginPortal()
-//    maven {
-//        url 'https://pkgs.dev.azure.com/it4all/develop/_packaging/it4all-artifacts/maven/v1'
-//        name 'it4allArtifacts'
-//        credentials(PasswordCredentials)
-//        authentication {
-//            basic(BasicAuthentication)
-//        }
-//    }
 }
 
 dependencies {
@@ -36,7 +31,7 @@ dependencies {
 }
 
 group = 'org.smartbit4all.platform.gradle'
-version = '0.1.5'
+version = '0.1.6'
 
 pluginBundle {
     website = 'https://github.com/smartbit4all'
