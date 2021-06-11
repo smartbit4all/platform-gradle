@@ -123,6 +123,7 @@ gradle*/
             }
 
             def mappings = extension.openApi.importMappings
+            def dateTimeMapping = extension.openApi.dateTimeMapping.get()
 
             descriptorList.each {
                 def apiName = it.getName().replace("-api.yaml", "");
@@ -160,16 +161,19 @@ gradle*/
                                     models: ""
                             ]
                             configOptions = [
-                                    dateLibrary: "java8",
-                                    unhandledException: 'true',
+                                    dateLibrary            : "java8",
+                                    unhandledException     : 'true',
                                     hideGenerationTimestamp: 'true',
-                                    useTags: 'true',
-                                    sourceFolder: '', // without this the generatum is placed under 'src/main/java'
-                                    interfaceOnly: 'true'
+                                    useTags                : 'true',
+                                    sourceFolder           : '', // without this the generatum is placed under 'src/main/java'
+                                    interfaceOnly          : 'true'
                             ]
-                            typeMappings = [
-                                    OffsetDateTime: 'java.time.LocalDateTime'
-                            ]
+                            if (!"".equals(dateTimeMapping)) {
+                                typeMappings = [
+                                        OffsetDateTime: "$dateTimeMapping"
+                                ]
+                            }
+
                             if (mappings != []) {
                                 importMappings = mappings
                             }

@@ -28,5 +28,7 @@ abstract public class SB4OpenApiExtension {
 
     abstract public MapProperty<String, String> getImportMappings();
 
+    abstract public Property<String> getDateTimeMapping();
+
 }
 

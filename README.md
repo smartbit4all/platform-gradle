@@ -114,6 +114,8 @@ smartbit4all {
         runGenAllOnCompile = false
         
         importMappings = []
+        
+        dateTimeMapping = "" // may use java.time.LocalDateTime, java.time.ZonedDateTime, etc.
     }
 }
 ```
