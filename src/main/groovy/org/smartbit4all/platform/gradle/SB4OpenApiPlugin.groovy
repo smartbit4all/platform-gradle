@@ -29,6 +29,7 @@ class SB4OpenApiPlugin implements Plugin<Project> {
             implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
             implementation 'io.swagger:swagger-annotations:1.5.22'
             implementation 'javax.validation:validation-api:2.0.1.Final'
+            implementation 'com.google.code.findbugs:jsr305:3.0.2'
         }
 
         project.afterEvaluate { Project proj ->
@@ -153,7 +154,8 @@ gradle*/
 
                     proj.tasks.create(taskName, GenerateTask.class, {
                         if (genModel) {
-                            generatorName = "spring"
+                            generatorName = "java"
+                            library = "resttemplate"
                             inputSpec = "$apiDescriptorPath$apiName-api.yaml"
                             outputDir = "$apiOutputDir"
                             modelPackage = "$modelPackageToUse"
@@ -162,6 +164,7 @@ gradle*/
                             ]
                             configOptions = [
                                     dateLibrary            : "java8",
+                                    useBeanValidation      : 'true',
                                     unhandledException     : 'true',
                                     hideGenerationTimestamp: 'true',
                                     useTags                : 'true',
