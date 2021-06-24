@@ -21,13 +21,34 @@ public class SB4JavaPlugin implements Plugin<Project> {
 
         // java version
         project.afterEvaluate {
-            Project p ->
+            Project proj ->
                 // source encoding
-                p.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
+                proj.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
                     getOptions().setEncoding(extension.sourceEncoding)
                 }
-                p.tasks.getByName(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME) {
+                proj.tasks.getByName(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME) {
                     getOptions().setEncoding(extension.sourceEncoding)
+                }
+                project.dependencies {
+                    implementation 'org.slf4j:slf4j-api:1.7.31'
+                    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+                    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+                    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+                }
+
+                if (extension.springBootTest) {
+                    project.dependencies {
+                        testImplementation 'org.junit.jupiter:junit-jupiter'
+                        testImplementation('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE') {
+                            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+                        }
+                        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+                    }
+
+                } else {
+                    project.dependencies {
+                        testImplementation 'org.slf4j:slf4j-simple:1.7.31'
+                    }
                 }
 
         }

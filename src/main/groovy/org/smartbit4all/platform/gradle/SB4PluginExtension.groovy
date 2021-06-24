@@ -10,6 +10,7 @@ class SB4PluginExtension {
 
     String sourceEncoding = "UTF-8"
     String vaadinVersion = "14.4.6"
+    Boolean springBootTest = false
 
     final SB4OpenApiExtension openApi
 
