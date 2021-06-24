@@ -89,8 +89,6 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                 if (file.getName().endsWith(".yaml"))
                     descriptorList << file
             }
-            println "API descriptor path: $apiDescriptorPath"
-            println "API output dir: $apiOutputDir"
 
             def taskList = []
 
@@ -143,13 +141,6 @@ gradle*/
                     def invokerPackageToUse = apiInvokerPackage
                     if (!invokerPackageToUse) {
                         invokerPackageToUse = "$apiInvokerPackagePrefix$apiName$apiInvokerPackagePostfix"
-                    }
-                    if (genModel) {
-                        println "API modelPackage for $apiName: $modelPackageToUse"
-                    }
-                    if (genApis) {
-                        println "API apiPackage for $apiName: $apiPackageToUse"
-                        println "API invokerPackage for $apiName: $invokerPackageToUse"
                     }
 
                     proj.tasks.create(taskName, GenerateTask.class, {
@@ -235,7 +226,19 @@ gradle*/
 
                         dependsOn('createGeneratorIgnoreFile')
 
-                        doLast{
+                        doFirst {
+                            println "API descriptor path: $apiDescriptorPath"
+                            println "API output dir: $apiOutputDir"
+                            if (genModel) {
+                                println "API modelPackage for $apiName: $modelPackageToUse"
+                            }
+                            if (genApis) {
+                                println "API apiPackage for $apiName: $apiPackageToUse"
+                                println "API invokerPackage for $apiName: $invokerPackageToUse"
+                            }
+                        }
+
+                        doLast {
                             proj.delete "$apiOutputDir/.openapi-generator"
                             proj.delete "$apiOutputDir/api"
                             proj.delete "$apiOutputDir/gradle"

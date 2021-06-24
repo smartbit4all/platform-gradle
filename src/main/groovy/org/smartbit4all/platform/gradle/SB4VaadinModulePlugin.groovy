@@ -25,7 +25,6 @@ public class SB4VaadinModulePlugin implements Plugin<Project> {
         // vaadin dependencies
         project.afterEvaluate { p ->
             def vaadinVersion = extension.vaadinVersion
-            println "vaadinVersion: $vaadinVersion"
             p.ext.set('vaadinVersion', vaadinVersion)
             DependencyManagementExtension dependencyManagement = p.extensions.getByName("dependencyManagement")
             dependencyManagement.imports {
