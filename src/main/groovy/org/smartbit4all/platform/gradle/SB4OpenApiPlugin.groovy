@@ -25,12 +25,6 @@ class SB4OpenApiPlugin implements Plugin<Project> {
         SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
         SourceSet mainSourceSet = sourceSets.getByName("main")
         mainSourceSet.getJava().srcDirs(srcGenMainJava)
-        project.dependencies {
-            implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
-            implementation 'io.swagger:swagger-annotations:1.5.22'
-            implementation 'javax.validation:validation-api:2.0.1.Final'
-            implementation 'com.google.code.findbugs:jsr305:3.0.2'
-        }
 
         project.afterEvaluate { Project proj ->
             def apiDescriptorPath = extension.openApi.apiDescriptorPath.get()
@@ -100,11 +94,23 @@ class SB4OpenApiPlugin implements Plugin<Project> {
                 return
             }
 
-            // add springfox dependency to rest server
-            if(genApiRestServer) {
+            // add dependencies to project based on what to generate
+            if (genModel) {
+                project.dependencies {
+                    implementation 'io.swagger.core.v3:swagger-annotations:2.1.9'
+                    implementation 'javax.validation:validation-api:2.0.1.Final'
+                    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+                }
+            }
+            if (genApiRestServer) {
                 proj.dependencies {
                     implementation 'io.springfox:springfox-swagger2:2.9.2'
+                    implementation 'io.springfox:springfox-swagger-common:2.9.2'
+                    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
                 }
+            }
+            if (genApiRestClient) {
+                // TODO which library?
             }
 
             proj.tasks.register('createGeneratorIgnoreFile') {
@@ -150,7 +156,7 @@ gradle*/
                             inputSpec = "$apiDescriptorPath$apiName-api.yaml"
                             outputDir = "$apiOutputDir"
                             modelPackage = "$modelPackageToUse"
-                            systemProperties = [
+                            globalProperties = [
                                     models: ""
                             ]
                             configOptions = [
@@ -180,7 +186,7 @@ gradle*/
                             apiPackage = "$apiPackageToUse"
                             invokerPackage = "$invokerPackageToUse"
                             library = "resttemplate"
-                            systemProperties = [
+                            globalProperties = [
                                     apis: "",
                                     apiTests: "false",
                                     supportingFiles: "",
@@ -203,7 +209,7 @@ gradle*/
                             apiPackage = "$apiPackageToUse"
                             invokerPackage = "$invokerPackageToUse"
                             library = "spring-boot"
-                            systemProperties = [
+                            globalProperties = [
                                     apis: "",
                                     supportingFiles: "",
                                     apiTests: "false",
