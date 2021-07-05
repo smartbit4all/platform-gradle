@@ -268,6 +268,12 @@ gradle*/
                                     fileset(dir: configFolder, includes: "OpenAPIDocumentationConfig.java")
                                 }
                             }
+                            if (genModel) {
+                                def modelPackagePath = modelPackageToUse.replaceAll("\\.", '/')
+                                ant.replaceregexp(match:'JSON_PROPERTY_', replace:'', flags:'g', byline:true) {
+                                    fileset(dir: "$apiOutputDir/$modelPackagePath", includes: '*.java')
+                                }
+                            }
                         }
                     })
                 }
