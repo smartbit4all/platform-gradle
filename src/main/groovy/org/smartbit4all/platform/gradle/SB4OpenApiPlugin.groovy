@@ -26,12 +26,6 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     SourceSet mainSourceSet = sourceSets.getByName("main")
     mainSourceSet.getJava().srcDirs(srcGenMainJava)
 
-    project.dependencies {
-      implementation 'io.swagger.core.v3:swagger-annotations:2.1.9'
-      implementation 'javax.validation:validation-api:2.0.1.Final'
-      implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    }
-
     project.afterEvaluate { setupProject(it, extension, srcGenMainJava) }
   }
 
@@ -108,13 +102,19 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     // TODO fix it, it doesn't work here
     if (genModel) {
       proj.dependencies {
-        implementation 'io.swagger.core.v3:swagger-annotations:2.1.9'
+        implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+        implementation 'io.swagger:swagger-annotations:1.5.22'
         implementation 'javax.validation:validation-api:2.0.1.Final'
         implementation 'com.google.code.findbugs:jsr305:3.0.2'
       }
     }
     if (genApiRestServer) {
       proj.dependencies {
+        implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+        implementation 'io.swagger:swagger-annotations:1.5.22'
+        implementation 'javax.validation:validation-api:2.0.1.Final'
+        implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
         implementation 'io.springfox:springfox-swagger2:2.9.2'
         implementation 'io.springfox:springfox-swagger-common:2.9.2'
         implementation 'io.springfox:springfox-swagger-ui:2.9.2'

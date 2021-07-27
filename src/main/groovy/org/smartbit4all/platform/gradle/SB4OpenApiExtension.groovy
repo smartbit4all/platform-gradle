@@ -20,15 +20,15 @@ abstract public class SB4OpenApiExtension {
     abstract public Property<String> getInvokerPackagePrefix()
     abstract public Property<String> getInvokerPackagePostfix()
 
-    abstract public Property<Boolean> getGenModel();
-    abstract public Property<Boolean> getGenApiRestClient();
-    abstract public Property<Boolean> getGenApiRestServer();
+    abstract public Property<Boolean> getGenModel()
+    abstract public Property<Boolean> getGenApiRestClient()
+    abstract public Property<Boolean> getGenApiRestServer()
 
-    abstract public Property<Boolean> getRunGenAllOnCompile();
+    abstract public Property<Boolean> getRunGenAllOnCompile()
 
-    abstract public MapProperty<String, String> getImportMappings();
+    abstract public MapProperty<String, String> getImportMappings()
 
-    abstract public Property<String> getDateTimeMapping();
+    abstract public Property<String> getDateTimeMapping()
 
 }
 

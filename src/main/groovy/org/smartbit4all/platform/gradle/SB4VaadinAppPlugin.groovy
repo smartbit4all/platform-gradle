@@ -14,28 +14,6 @@ public class SB4VaadinAppPlugin implements Plugin<Project> {
         project.getPlugins().apply("org.springframework.boot")
         project.getPlugins().apply("com.vaadin")
 
-        project.afterEvaluate { Project proj ->
-            proj.defaultTasks("clean", "vaadinBuildFrontend", "build")
-
-            proj.configurations {
-                developmentOnly
-                runtimeClasspath {
-                    extendsFrom developmentOnly
-                }
-            }
-
-            proj.dependencies {
-                developmentOnly 'org.springframework.boot:spring-boot-devtools'
-                testImplementation('org.springframework.boot:spring-boot-starter-test') {
-                    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-                }
-            }
-
-            def vaadin = proj.getExtensions().getByType(VaadinFlowPluginExtension)
-            vaadin.pnpmEnable = true
-
-        }
-
         project.tasks.getByName("vaadinBuildFrontend", {
             doLast{
                 project.file('build/vaadin-generated/.keep').text=""
@@ -48,6 +26,29 @@ public class SB4VaadinAppPlugin implements Plugin<Project> {
             dependsOn("assemble")
         })
 
+        project.afterEvaluate { setupProject(it) }
+
     }
 
+    void setupProject(Project proj) {
+        proj.defaultTasks("clean", "vaadinBuildFrontend", "build")
+
+        proj.configurations {
+            developmentOnly
+            runtimeClasspath {
+                extendsFrom developmentOnly
+            }
+        }
+
+        proj.dependencies {
+            developmentOnly 'org.springframework.boot:spring-boot-devtools'
+            testImplementation('org.springframework.boot:spring-boot-starter-test') {
+                exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+            }
+        }
+
+        def vaadin = proj.getExtensions().getByType(VaadinFlowPluginExtension)
+        vaadin.pnpmEnable = true
+
+    }
 }
