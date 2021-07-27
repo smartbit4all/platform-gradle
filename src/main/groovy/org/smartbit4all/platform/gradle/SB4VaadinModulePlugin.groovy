@@ -22,14 +22,12 @@ public class SB4VaadinModulePlugin implements Plugin<Project> {
                 url = "https://maven.vaadin.com/vaadin-addons"
             }
         }
-        // vaadin dependencies
-        project.afterEvaluate { p ->
-        }
         // test
         project.tasks.getByName(JavaPlugin.TEST_TASK_NAME, {
             useJUnitPlatform()
         })
-
+        // vaadin dependencies
+        project.afterEvaluate { setupProject(it, extension) }
     }
 
     void setupProject(Project p, SB4PluginExtension extension) {
