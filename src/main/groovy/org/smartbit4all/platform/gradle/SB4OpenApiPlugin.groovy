@@ -168,7 +168,8 @@ gradle*/
             outputDir = "$apiOutputDir"
             modelPackage = "$modelPackageToUse"
             globalProperties = [
-              models: ""
+              models: "",
+              modelDocs: "false"
             ]
             configOptions = [
               dateLibrary            : "java8",
@@ -179,21 +180,11 @@ gradle*/
               sourceFolder           : '', // without this the generatum is placed under 'src/main/java'
               interfaceOnly          : 'true'
             ]
-            if (!"".equals(dateTimeMapping)) {
-              typeMappings = [
-                OffsetDateTime: "$dateTimeMapping"
-              ]
-            }
-
-            if (mappings != []) {
-              importMappings = mappings
-            }
           }
           if (genApiRestClient) {
             generatorName = "java"
             inputSpec = "$apiDescriptorPath$apiName-api.yaml"
             outputDir = "$apiOutputDir"
-            modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
             library = "resttemplate"
@@ -216,10 +207,9 @@ gradle*/
             generatorName = "spring"
             inputSpec = "$apiDescriptorPath$apiName-api.yaml"
             outputDir = "$apiOutputDir"
-            modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
-            library = "spring-boot"
+            library = "spring-mvc"
             globalProperties = [
               apis: "",
               supportingFiles: "",
@@ -235,6 +225,15 @@ gradle*/
               swaggerDocketConfig: 'true',
               sourceFolder: '' // without this the generatum is placed under 'src/main/java'
             ]
+          }
+          if (!"".equals(dateTimeMapping)) {
+            typeMappings = [
+              OffsetDateTime: "$dateTimeMapping"
+            ]
+          }
+
+          if (mappings != []) {
+            importMappings = mappings
           }
         })
 
@@ -263,8 +262,8 @@ gradle*/
             proj.delete "$apiOutputDir/.openapi-generator-ignore"
             if(genApiRestServer) {
               // delete unnecessary generated invoker folder (due unwanted Application class)
-              def invokerPackageFolder = "$invokerPackageToUse".replace(".","/")
-              proj.delete "$apiOutputDir/$invokerPackageFolder"
+              // def invokerPackageFolder = "$invokerPackageToUse".replace(".","/")
+              // proj.delete "$apiOutputDir/$invokerPackageFolder"
 
               // copy DocumentationConfig to api package
               def apiPackageFolder = "$apiPackageToUse".replace(".","/")
