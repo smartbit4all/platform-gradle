@@ -196,6 +196,7 @@ gradle*/
             ]
             configOptions = [
               dateLibrary: "java8",
+              useAbstractionForFiles: 'true',
               unhandledException: 'true',
               hideGenerationTimestamp: 'true',
               useTags: 'true',
