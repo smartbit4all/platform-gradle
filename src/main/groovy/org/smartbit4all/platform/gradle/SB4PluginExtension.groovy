@@ -33,6 +33,7 @@ class SB4PluginExtension {
         openApi.runGenAllOnCompile = false
         openApi.importMappings = objects.mapProperty(String.class, String.class)
         openApi.dateTimeMapping = ""
+        openApi.apiDescriptorMapping = objects.mapProperty(String.class, String.class)
     }
 
     public SB4OpenApiExtension getOpenApi() {

@@ -30,5 +30,7 @@ abstract public class SB4OpenApiExtension {
 
     abstract public Property<String> getDateTimeMapping()
 
+    abstract public MapProperty<String, String> getApiDescriptorMapping()
+
 }
 

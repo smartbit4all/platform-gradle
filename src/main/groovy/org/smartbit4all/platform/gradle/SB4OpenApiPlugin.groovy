@@ -1,9 +1,11 @@
 package org.smartbit4all.platform.gradle
 
+import org.apache.tools.ant.taskdefs.condition.HasMethod
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
@@ -81,14 +83,18 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     def runGenAllOnCompile = extension.openApi.runGenAllOnCompile.get()
 
     def descriptorList = []
-    def dir = new File("$apiDescriptorPath")
-    dir.eachFile(FileType.FILES) { file ->
-      // no recurse!
-      if (file.getName().endsWith(".yaml"))
-        descriptorList << file
+    def apiDescriptorMappingParam = extension.openApi.apiDescriptorMapping.get()
+    Map<String, String> apiDescriptorMapping = new HashMap<>(apiDescriptorMappingParam)
+    if (apiDescriptorMapping.isEmpty()) {
+      def dir = new File("$apiDescriptorPath")
+      dir.eachFile(FileType.FILES) { file ->
+        // no recurse!
+        if (file.getName().endsWith("-api.yaml")) {
+          def apiName = file.getName().replace("-api.yaml", "")
+          apiDescriptorMapping.put("$apiDescriptorPath$apiName-api.yaml", apiName)
+        }
+      }
     }
-
-    def taskList = []
 
     if (!genModel && !genApiRestClient && !genApiRestServer) {
       genModel = true
@@ -140,9 +146,10 @@ gradle*/
 
     def mappings = extension.openApi.importMappings
     def dateTimeMapping = extension.openApi.dateTimeMapping.get()
+    def taskList = []
 
-    descriptorList.each {
-      def apiName = it.getName().replace("-api.yaml", "");
+    apiDescriptorMapping.keySet().each {apiDescriptor ->
+      def apiName = apiDescriptorMapping.get(apiDescriptor)
       def taskName = "openApiGenerate" + apiName.capitalize()
       taskList << taskName
 
@@ -164,7 +171,7 @@ gradle*/
           if (genModel) {
             generatorName = "java"
             library = "resttemplate"
-            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+            inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
             modelPackage = "$modelPackageToUse"
             globalProperties = [
@@ -183,7 +190,7 @@ gradle*/
           }
           if (genApiRestClient) {
             generatorName = "java"
-            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+            inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
@@ -206,7 +213,7 @@ gradle*/
           }
           if (genApiRestServer) {
             generatorName = "spring"
-            inputSpec = "$apiDescriptorPath$apiName-api.yaml"
+            inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
@@ -244,7 +251,8 @@ gradle*/
           dependsOn('createGeneratorIgnoreFile')
 
           doFirst {
-            println "API descriptor path: $apiDescriptorPath"
+            println "API descriptor: $apiDescriptor"
+            println "API name: $apiName"
             println "API output dir: $apiOutputDir"
             if (genModel) {
               println "API modelPackage for $apiName: $modelPackageToUse"
