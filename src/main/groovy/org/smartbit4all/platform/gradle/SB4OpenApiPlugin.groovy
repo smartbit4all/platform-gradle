@@ -78,7 +78,7 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     def genApis = genApiRestClient || genApiRestServer
     if (genApiRestClient && genApiRestServer) {
       // TODO better error handling
-      println "***** Generating restApiClient and restApiServer currently not supported! Unexpected results should expected! *****"
+      proj.logger.error "***** Generating restApiClient and restApiServer currently not supported! Unexpected results should expected! *****"
     }
     def runGenAllOnCompile = extension.openApi.runGenAllOnCompile.get()
 
@@ -86,6 +86,7 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     def apiDescriptorMappingParam = extension.openApi.apiDescriptorMapping.get()
     Map<String, String> apiDescriptorMapping = new HashMap<>(apiDescriptorMappingParam)
     if (apiDescriptorMapping.isEmpty()) {
+      proj.logger.debug "apiDescriptorMapping is empty, creating from directory $apiDescriptorPath:"
       def dir = new File("$apiDescriptorPath")
       dir.eachFile(FileType.FILES) { file ->
         // no recurse!
@@ -94,13 +95,18 @@ class SB4OpenApiPlugin implements Plugin<Project> {
           apiDescriptorMapping.put("$apiDescriptorPath$apiName-api.yaml", apiName)
         }
       }
+    } else {
+      proj.logger.debug "apiDescriptorMapping is not empty:"
+    }
+    apiDescriptorMapping.each { it ->
+      proj.logger.debug("$it.key: $it.value")
     }
 
     if (!genModel && !genApiRestClient && !genApiRestServer) {
       genModel = true
     }
     if ( (genApiRestServer && genApiRestClient) || (genModel && genApiRestClient) || (genModel && genApiRestServer)) {
-      println "genModel, genApiRestClient, genApiRestServer cannot be true at the same time!"
+      proj.logger.error "genModel, genApiRestClient, genApiRestServer cannot be true at the same time!"
       return
     }
 
@@ -131,16 +137,21 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     }
 
     proj.tasks.register('createGeneratorIgnoreFile') {
+      doFirst {
+        proj.logger.debug "createGeneratorIgnoreFil.doFirst"
+      }
       // create .openapi-generator-ignore before generating
       doLast {
-        project.mkdir(apiOutputDir)
-        project.file("$apiOutputDir/.openapi-generator-ignore").text = """
+        proj.logger.debug "createGeneratorIgnoreFil.doLast begins"
+        proj.mkdir(apiOutputDir)
+        proj.file("$apiOutputDir/.openapi-generator-ignore").text = """
 /*
 api/*
 docs/*
 gradle*/
 /src/
 """
+        proj.logger.debug "createGeneratorIgnoreFil.doLast ends"
       }
     }
 
@@ -149,8 +160,11 @@ gradle*/
     def taskList = []
 
     apiDescriptorMapping.keySet().each {apiDescriptor ->
+      proj.logger.debug "Creating task for $apiDescriptor"
       def apiName = apiDescriptorMapping.get(apiDescriptor)
+      proj.logger.debug "API name $apiName"
       def taskName = "openApiGenerate" + apiName.capitalize()
+      proj.logger.debug "Task name $taskName"
       taskList << taskName
 
       if (genModel || genApis) {
@@ -251,19 +265,23 @@ gradle*/
           dependsOn('createGeneratorIgnoreFile')
 
           doFirst {
-            println "API descriptor: $apiDescriptor"
-            println "API name: $apiName"
-            println "API output dir: $apiOutputDir"
+            proj.logger.debug("$taskName .doFirst begins")
+            proj.logger.debug "$taskName .doFirst begins"
+            proj.logger.lifecycle "API descriptor: $apiDescriptor"
+            proj.logger.lifecycle "API name: $apiName"
+            proj.logger.lifecycle "API output dir: $apiOutputDir"
             if (genModel) {
-              println "API modelPackage for $apiName: $modelPackageToUse"
+              proj.logger.lifecycle "API modelPackage for $apiName: $modelPackageToUse"
             }
             if (genApis) {
-              println "API apiPackage for $apiName: $apiPackageToUse"
-              println "API invokerPackage for $apiName: $invokerPackageToUse"
+              proj.logger.lifecycle "API apiPackage for $apiName: $apiPackageToUse"
+              proj.logger.lifecycle "API invokerPackage for $apiName: $invokerPackageToUse"
             }
+            proj.logger.debug "$taskName .doFirst ends"
           }
 
           doLast {
+            proj.logger.debug "$taskName .doLast begins"
             proj.delete "$apiOutputDir/.openapi-generator"
             proj.delete "$apiOutputDir/api"
             proj.delete "$apiOutputDir/gradle"
@@ -293,17 +311,20 @@ gradle*/
                 fileset(dir: "$apiOutputDir/$modelPackagePath", includes: '*.java')
               }
             }
+            proj.logger.debug "$taskName .doLast ends"
+
           }
         })
       }
     }
+    proj.logger.debug("Tasklist: $taskList")
     if (taskList.size() > 0) {
       proj.tasks.create("genAll", DefaultTask, {
         dependsOn(taskList)
       })
 
       if (runGenAllOnCompile) {
-        project.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME, {
+        proj.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME, {
           dependsOn('genAll')
         })
       }
