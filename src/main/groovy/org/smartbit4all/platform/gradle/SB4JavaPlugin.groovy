@@ -21,7 +21,6 @@ public class SB4JavaPlugin implements Plugin<Project> {
 
         // repositories
         project.repositories {
-            jcenter()
             mavenCentral()
         }
 
