@@ -31,7 +31,7 @@ public class SB4VaadinModulePlugin implements Plugin<Project> {
     }
 
     void setupProject(Project p, SB4PluginExtension extension) {
-        def vaadinVersion = extension.vaadinVersion
+        String vaadinVersion = p.properties.get("vaadinVersion")
         p.ext.set('vaadinVersion', vaadinVersion)
         DependencyManagementExtension dependencyManagement = p.extensions.getByName("dependencyManagement")
         dependencyManagement.imports {

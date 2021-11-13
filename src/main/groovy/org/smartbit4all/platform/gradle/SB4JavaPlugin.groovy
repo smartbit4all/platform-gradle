@@ -43,6 +43,7 @@ public class SB4JavaPlugin implements Plugin<Project> {
         proj.dependencies {
             implementation 'org.slf4j:slf4j-api:1.7.31'
             implementation 'javax.annotation:javax.annotation-api:1.3.2'
+            implementation 'javax.validation:validation-api:2.0.1.Final'
             testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
             testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
         }

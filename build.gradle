@@ -23,7 +23,6 @@ repositories {
 dependencies {
     implementation 'io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE'
     implementation 'org.springframework.boot:spring-boot-gradle-plugin:2.3.8.RELEASE'
-    implementation 'com.vaadin:vaadin-gradle-plugin:0.14.3.7'
     implementation 'org.openapitools:openapi-generator-gradle-plugin:5.2.0'
 
     // Use the awesome Spock testing and specification framework
