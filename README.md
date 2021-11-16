@@ -24,13 +24,21 @@ Setup options and defaults:
 ```
 smartbit4all {
     sourceEncoding = 'UTF-8'
+    springBootTest = false
 }
 ```
 
 Effect:
+- repositories: add mavenCentral
+- dependencies:
+  - implementation 'org.slf4j:slf4j-api:1.7.31'
+  - implementation 'javax.annotation:javax.annotation-api:1.3.2'
+  - implementation 'javax.validation:validation-api:2.0.1.Final'
+  - testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+  - testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 - javac: use sourceEncoding
-- repositories: add jcenter and mavenCentral
 - test: useJUnitPlatform
+- springBootTest: if true, add spring-boot-starter-test to testImplementation, otherwise use slf4j-simple for tests
 
 ## Vaadin module
 
@@ -41,18 +49,12 @@ plugins {
     id 'org.smartbit4all.platform.gradle.vaadin-module'
 }
 ```
-
-Setup options and defaults:
-
-```
-smartbit4all {
-    vaadinVersion = "14.4.6"
-}
-```
+Requires:
+- vaadinVersion in project properties (e.g. gradle.properties)
 
 Effect:
 - apply io.spring.dependency-management plugin
-- add vaadin.vaadinVersion dependencies
+- add vaadinVersion dependencies
 - add vaadin-addons repository
 - add spring-boot-starter-web, vaadin-spring-boot-starter
 - test: useJUnitPlatform
@@ -63,21 +65,36 @@ Include plugin:
 
 ```
 plugins {
+    id 'com.vaadin'
     id 'org.smartbit4all.platform.gradle.vaadin-app'
+}
+
+// recommended
+vaadin {
+  pnpmEnable = true
 }
 ```
 
-Setup options and defaults:
-
+Requires:
+- vaadin plugin defined in settings.gradle (should be at first line)
 ```
-// none
+pluginManagement {
+  plugins {
+        id 'com.vaadin' version "${vaadinPluginVersion}" apply false
+    }
+}
+```
+
+Example gradle.properties
+```
+vaadinVersion=14.7.5
+vaadinPluginVersion=0.14.7.3
 ```
 
 Effect:
 - apply plugins:
   - org.smartbit4all.platform.gradle.vaadin-module
   - org.springframework.boot
-  - com.vaadin
 - make defaultTasks: clean, vaadinBuildFrontend, build
 - enable vaadin.pnpm
 - add .keep to build/vaadin-generated
