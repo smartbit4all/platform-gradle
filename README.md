@@ -28,9 +28,18 @@ smartbit4all {
 }
 ```
 
+Example gradle.properties
+```
+springBootVersion=2.3.12.RELEASE
+```
+
+
 Effect:
 - repositories: add mavenCentral
 - dependencies:
+  - add java-library plugin
+  - add io.spring.dependency-management plugin
+  - add org.springframework.boot:spring-boot-dependencies:${springBootVersion} BOM dependencies
   - implementation 'org.slf4j:slf4j-api:1.7.31'
   - implementation 'javax.annotation:javax.annotation-api:1.3.2'
   - implementation 'javax.validation:validation-api:2.0.1.Final'
