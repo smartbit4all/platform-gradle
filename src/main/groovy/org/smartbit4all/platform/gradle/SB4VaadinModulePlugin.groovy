@@ -39,7 +39,7 @@ public class SB4VaadinModulePlugin implements Plugin<Project> {
         }
         p.dependencies {
             api 'org.springframework.boot:spring-boot-starter-web'
-            implementation('com.vaadin:vaadin-spring-boot-starter') {
+            api ('com.vaadin:vaadin-spring-boot-starter') {
                 // Webjars are only needed when running in Vaadin 13 compatibility mode
                 ["com.vaadin.webjar", "org.webjars.bowergithub.insites",
                  "org.webjars.bowergithub.polymer", "org.webjars.bowergithub.polymerelements",

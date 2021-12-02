@@ -1,6 +1,7 @@
 package org.smartbit4all.platform.gradle
 
 
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
@@ -16,8 +17,9 @@ public class SB4JavaPlugin implements Plugin<Project> {
             extension = project.extensions.create(SB4PluginExtension.EXTENSION_NAME, SB4PluginExtension)
         }
 
-        // apply plugin java-library
+        // apply plugins
         project.getPlugins().apply(JavaLibraryPlugin.class);
+        project.getPlugins().apply("io.spring.dependency-management")
 
         // repositories
         project.repositories {
@@ -33,6 +35,12 @@ public class SB4JavaPlugin implements Plugin<Project> {
     }
 
     void setupProject(Project proj, SB4PluginExtension extension) {
+        String springBootVersion = proj.properties.get("springBootVersion")
+        proj.ext.set('springBootVersion', springBootVersion)
+        DependencyManagementExtension dependencyManagement = proj.extensions.getByName("dependencyManagement")
+        dependencyManagement.imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
         // source encoding
         proj.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
             getOptions().setEncoding(extension.sourceEncoding)
