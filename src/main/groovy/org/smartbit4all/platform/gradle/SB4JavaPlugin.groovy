@@ -35,14 +35,12 @@ public class SB4JavaPlugin implements Plugin<Project> {
     }
 
     void setupProject(Project proj, SB4PluginExtension extension) {
-        String springBootVersion = proj.properties.get("springBootVersion")
-        if (!springBootVersion) {
-            springBootVersion = "2.3.12.RELEASE"
-        }
-        proj.ext.set('springBootVersion', springBootVersion)
+        getAndSetProperty(proj, "springBootVersion", "2.3.12.RELEASE")
+        getAndSetProperty(proj, "junitVersion", "5.6.3")
         DependencyManagementExtension dependencyManagement = proj.extensions.getByName("dependencyManagement")
         dependencyManagement.imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.junit:junit-bom:${junitVersion}"
         }
         // source encoding
         proj.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
@@ -55,8 +53,8 @@ public class SB4JavaPlugin implements Plugin<Project> {
             implementation 'org.slf4j:slf4j-api:1.7.32'
             implementation 'javax.annotation:javax.annotation-api:1.3.2'
             implementation 'javax.validation:validation-api:2.0.1.Final'
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
         }
 
         if (extension.springBootTest) {
@@ -73,6 +71,15 @@ public class SB4JavaPlugin implements Plugin<Project> {
                 testImplementation 'org.slf4j:slf4j-simple:1.7.32'
             }
         }
+    }
+
+    private String getAndSetProperty(Project proj, String propertyName, String value) {
+        String v = proj.properties.get(propertyName)
+        if (!v) {
+            v = value
+        }
+        proj.ext.set(propertyName, value)
+
     }
 
 }
