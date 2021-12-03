@@ -31,6 +31,7 @@ smartbit4all {
 Example gradle.properties
 ```
 springBootVersion=2.3.12.RELEASE
+junitVersion=5.6.3
 ```
 
 
@@ -41,11 +42,13 @@ Effect:
   - add io.spring.dependency-management plugin
   - add org.springframework.boot:spring-boot-dependencies:${springBootVersion} BOM dependencies
     - springBootVersion = 2.3.12.RELEASE if not specified 
-  - implementation 'org.slf4j:slf4j-api:1.7.31'
+  - add org.junit:junit-bom:${junitVersion} BOM dependencies
+    - junitVersion = 5.6.3 if not specified 
+  - implementation 'org.slf4j:slf4j-api:1.7.32'
   - implementation 'javax.annotation:javax.annotation-api:1.3.2'
   - implementation 'javax.validation:validation-api:2.0.1.Final'
-  - testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-  - testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+  - testImplementation 'org.junit.jupiter:junit-jupiter-api'
+  - testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 - javac: use sourceEncoding
 - test: useJUnitPlatform
 - springBootTest: if true, add spring-boot-starter-test to testImplementation, otherwise use slf4j-simple for tests
