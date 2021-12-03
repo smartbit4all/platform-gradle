@@ -36,6 +36,9 @@ public class SB4JavaPlugin implements Plugin<Project> {
 
     void setupProject(Project proj, SB4PluginExtension extension) {
         String springBootVersion = proj.properties.get("springBootVersion")
+        if (!springBootVersion) {
+            springBootVersion = "2.3.12.RELEASE"
+        }
         proj.ext.set('springBootVersion', springBootVersion)
         DependencyManagementExtension dependencyManagement = proj.extensions.getByName("dependencyManagement")
         dependencyManagement.imports {
@@ -49,17 +52,17 @@ public class SB4JavaPlugin implements Plugin<Project> {
             getOptions().setEncoding(extension.sourceEncoding)
         }
         proj.dependencies {
-            implementation 'org.slf4j:slf4j-api:1.7.31'
+            implementation 'org.slf4j:slf4j-api:1.7.32'
             implementation 'javax.annotation:javax.annotation-api:1.3.2'
             implementation 'javax.validation:validation-api:2.0.1.Final'
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
         }
 
         if (extension.springBootTest) {
             proj.dependencies {
                 testImplementation 'org.junit.jupiter:junit-jupiter'
-                testImplementation('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE') {
+                testImplementation('org.springframework.boot:spring-boot-starter-test') {
                     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
                 }
                 testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -67,7 +70,7 @@ public class SB4JavaPlugin implements Plugin<Project> {
 
         } else {
             proj.dependencies {
-                testImplementation 'org.slf4j:slf4j-simple:1.7.31'
+                testImplementation 'org.slf4j:slf4j-simple:1.7.32'
             }
         }
     }
