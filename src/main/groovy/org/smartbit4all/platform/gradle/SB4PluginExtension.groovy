@@ -9,7 +9,7 @@ class SB4PluginExtension {
     static final String EXTENSION_NAME = "smartbit4all"
 
     String sourceEncoding = "UTF-8"
-    Boolean springBootTest = false
+    Boolean springBootTest = true
 
     final SB4OpenApiExtension openApi
 
