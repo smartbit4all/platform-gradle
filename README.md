@@ -24,7 +24,7 @@ Setup options and defaults:
 ```
 smartbit4all {
     sourceEncoding = 'UTF-8'
-    springBootTest = false
+    springBootTest = true
 }
 ```
 
@@ -40,6 +40,7 @@ Effect:
   - add java-library plugin
   - add io.spring.dependency-management plugin
   - add org.springframework.boot:spring-boot-dependencies:${springBootVersion} BOM dependencies
+    - springBootVersion = 2.3.12.RELEASE if not specified 
   - implementation 'org.slf4j:slf4j-api:1.7.31'
   - implementation 'javax.annotation:javax.annotation-api:1.3.2'
   - implementation 'javax.validation:validation-api:2.0.1.Final'
