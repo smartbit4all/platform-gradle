@@ -78,7 +78,7 @@ public class SB4JavaPlugin implements Plugin<Project> {
         if (!v) {
             v = value
         }
-        proj.ext.set(propertyName, value)
+        proj.ext.set(propertyName, v)
 
     }
 
