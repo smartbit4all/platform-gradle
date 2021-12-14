@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.javadoc.Javadoc
 
 public class SB4JavaPlugin implements Plugin<Project> {
 
@@ -49,6 +50,13 @@ public class SB4JavaPlugin implements Plugin<Project> {
         proj.tasks.getByName(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME) {
             getOptions().setEncoding(extension.sourceEncoding)
         }
+        proj.tasks.getByName(JavaPlugin.JAVADOC_TASK_NAME) {
+            getOptions().setEncoding(extension.sourceEncoding)
+        }
+        proj.tasks.withType(Javadoc.class) {
+            getOptions().addStringOption('Xdoclint:none', '-quiet')
+        }
+
         proj.dependencies {
             implementation 'org.slf4j:slf4j-api:1.7.32'
             implementation 'javax.annotation:javax.annotation-api:1.3.2'
