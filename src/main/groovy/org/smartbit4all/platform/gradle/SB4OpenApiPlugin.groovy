@@ -105,8 +105,8 @@ class SB4OpenApiPlugin implements Plugin<Project> {
     if (!genModel && !genApiRestClient && !genApiRestServer) {
       genModel = true
     }
-    if ( (genApiRestServer && genApiRestClient) || (genModel && genApiRestClient) || (genModel && genApiRestServer)) {
-      proj.logger.error "genModel, genApiRestClient, genApiRestServer cannot be true at the same time!"
+    if ( (genApiRestServer && genApiRestClient)) {
+      proj.logger.error "genApiRestClient, genApiRestServer cannot be true at the same time!"
       return
     }
 
@@ -182,7 +182,7 @@ gradle*/
         }
 
         proj.tasks.create(taskName, GenerateTask.class, {
-          if (genModel) {
+          if (genModel && !genApis) {
             generatorName = "java"
             library = "resttemplate"
             inputSpec = "$apiDescriptor"
@@ -215,6 +215,13 @@ gradle*/
               supportingFiles: "",
               apiDocs: "false"
             ]
+            if (genModel) {
+              modelPackage = "$modelPackageToUse"
+              globalProperties.putAll([
+                      models   : "",
+                      modelDocs: "false"
+              ])
+            }
             configOptions = [
               dateLibrary: "java8",
               useAbstractionForFiles: 'true',
@@ -238,6 +245,13 @@ gradle*/
               apiTests: "false",
               apiDocs: "false"
             ]
+            if (genModel) {
+              modelPackage = "$modelPackageToUse"
+              globalProperties.putAll([
+                      models   : "",
+                      modelDocs: "false"
+              ])
+            }
             configOptions = [
               dateLibrary: "java8",
               delegatePattern: 'true',

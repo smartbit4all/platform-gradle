@@ -159,4 +159,4 @@ Effect:
 - make compileJava depend on genAll if runGenAllOnCompile == true
 
 Limitations:
-- only one of genModel/genApiRestClient/genApiRestServer can be true at a time!
+- genApiRestClient and genApiRestServer cannot be true at the same time!
