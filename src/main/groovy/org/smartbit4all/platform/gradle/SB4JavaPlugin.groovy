@@ -1,13 +1,12 @@
 package org.smartbit4all.platform.gradle
 
-
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.testing.jacoco.plugins.JacocoPlugin
 
 public class SB4JavaPlugin implements Plugin<Project> {
 
@@ -20,6 +19,7 @@ public class SB4JavaPlugin implements Plugin<Project> {
 
         // apply plugins
         project.getPlugins().apply(JavaLibraryPlugin.class);
+        project.getPlugins().apply(JacocoPlugin.class)
         project.getPlugins().apply("io.spring.dependency-management")
 
         // repositories
@@ -43,6 +43,17 @@ public class SB4JavaPlugin implements Plugin<Project> {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
             mavenBom "org.junit:junit-bom:${junitVersion}"
         }
+        // configure JaCoCo for sonar and to always run with tests
+        proj.tasks.getByName("test", {
+            finalizedBy('jacocoTestReport')
+        })
+        proj.tasks.getByName("jacocoTestReport", {
+            reports {
+                xml.required = true
+            }
+            dependsOn('test')
+        })
+
         // source encoding
         proj.tasks.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME) {
             getOptions().setEncoding(extension.sourceEncoding)
