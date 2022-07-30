@@ -30,7 +30,7 @@ dependencies {
 }
 
 group = 'org.smartbit4all.platform.gradle'
-version = '0.3.6'
+version = '0.3.7'
 
 pluginBundle {
     website = 'https://github.com/smartbit4all'
