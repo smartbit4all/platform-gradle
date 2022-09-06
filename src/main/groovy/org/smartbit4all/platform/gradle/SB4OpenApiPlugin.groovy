@@ -206,6 +206,7 @@ gradle*/
             generatorName = "java"
             inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
+            modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
             library = "resttemplate"
@@ -216,7 +217,6 @@ gradle*/
               apiDocs: "false"
             ]
             if (genModel) {
-              modelPackage = "$modelPackageToUse"
               globalProperties.putAll([
                       models   : "",
                       modelDocs: "false"
@@ -236,6 +236,7 @@ gradle*/
             generatorName = "spring"
             inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
+            modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
             library = "spring-mvc"
@@ -246,7 +247,6 @@ gradle*/
               apiDocs: "false"
             ]
             if (genModel) {
-              modelPackage = "$modelPackageToUse"
               globalProperties.putAll([
                       models   : "",
                       modelDocs: "false"
@@ -284,9 +284,7 @@ gradle*/
             proj.logger.lifecycle "API descriptor: $apiDescriptor"
             proj.logger.lifecycle "API name: $apiName"
             proj.logger.lifecycle "API output dir: $apiOutputDir"
-            if (genModel) {
-              proj.logger.lifecycle "API modelPackage for $apiName: $modelPackageToUse"
-            }
+            proj.logger.lifecycle "API modelPackage for $apiName: $modelPackageToUse"
             if (genApis) {
               proj.logger.lifecycle "API apiPackage for $apiName: $apiPackageToUse"
               proj.logger.lifecycle "API invokerPackage for $apiName: $invokerPackageToUse"
