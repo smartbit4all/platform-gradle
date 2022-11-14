@@ -23,14 +23,14 @@ repositories {
 dependencies {
     implementation 'io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE'
     implementation 'org.springframework.boot:spring-boot-gradle-plugin:2.3.12.RELEASE'
-    implementation 'org.openapitools:openapi-generator-gradle-plugin:5.3.0'
+    implementation 'org.openapitools:openapi-generator-gradle-plugin:5.4.0'
 
     // Use the awesome Spock testing and specification framework
     testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
 }
 
 group = 'org.smartbit4all.platform.gradle'
-version = '0.3.8'
+version = '0.4.0'
 
 pluginBundle {
     website = 'https://github.com/smartbit4all'
