@@ -259,6 +259,8 @@ gradle*/
               hideGenerationTimestamp: 'true',
               useTags: 'true',
               swaggerDocketConfig: 'true',
+              annotationLibrary: 'swagger1',
+              documentationProvider: 'springfox',
               sourceFolder: '' // without this the generatum is placed under 'src/main/java'
             ]
           }
