@@ -204,12 +204,12 @@ gradle*/
           }
           if (genApiRestClient) {
             generatorName = "java"
+            library = "resttemplate"
             inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
             modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
-            library = "resttemplate"
             globalProperties = [
               apis: "",
               apiTests: "false",
@@ -234,12 +234,12 @@ gradle*/
           }
           if (genApiRestServer) {
             generatorName = "spring"
+            library = "spring-mvc"
             inputSpec = "$apiDescriptor"
             outputDir = "$apiOutputDir"
             modelPackage = "$modelPackageToUse"
             apiPackage = "$apiPackageToUse"
             invokerPackage = "$invokerPackageToUse"
-            library = "spring-mvc"
             globalProperties = [
               apis: "",
               supportingFiles: "",
@@ -315,12 +315,6 @@ gradle*/
 
               ant.replaceregexp(match:"package org.openapitools.configuration", replace:"package $apiPackageToUse" + ".config", flags:'g', byline:true) {
                 fileset(dir: configFolder, includes: "OpenAPIDocumentationConfig.java")
-              }
-            }
-            if (genModel) {
-              def modelPackagePath = modelPackageToUse.replaceAll("\\.", '/')
-              ant.replaceregexp(match:'JSON_PROPERTY_', replace:'', flags:'g', byline:true) {
-                fileset(dir: "$apiOutputDir/$modelPackagePath", includes: '*.java')
               }
             }
             proj.logger.debug "$taskName .doLast ends"
