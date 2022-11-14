@@ -150,6 +150,7 @@ api/*
 docs/*
 gradle*/
 /src/
+
 """
         proj.logger.debug "createGeneratorIgnoreFil.doLast ends"
       }
@@ -305,6 +306,8 @@ gradle*/
               // delete unnecessary generated invoker folder (due unwanted Application class)
               // def invokerPackageFolder = "$invokerPackageToUse".replace(".","/")
               // proj.delete "$apiOutputDir/$invokerPackageFolder"
+              proj.delete "$apiOutputDir/pom.xml"
+              proj.delete "$apiOutputDir/README.md"
 
               // copy DocumentationConfig to api package
               def apiPackageFolder = "$apiPackageToUse".replace(".","/")
